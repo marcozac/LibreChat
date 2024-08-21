@@ -16,7 +16,9 @@
 
 /**
  * @exports AxiosResponse
- * @typedef {import('axios').AxiosResponse} AxiosResponse
+ * @template [T]
+ * @template [D]
+ * @typedef {import('axios').AxiosResponse<T, D>} AxiosResponse
  * @memberof typedefs
  */
 
@@ -1423,6 +1425,68 @@
  * @typedef {Object} OllamaListResponse
  * @property {OllamaModel[]} models - the list of models available.
  * @memberof typedefs
+ */
+
+/**
+ * @typedef {Object} WorkersAIModelTask
+ * @property {string} id - The ID of the task.
+ * @property {string} name - The name of the task (e.g. 'Text Generation').
+ * @property {string} description - The description of the task.
+ */
+
+/**
+ * @typedef {unknown} WorkersAIModelTag
+ *
+ * No docs available for this type and empty in the response.
+ * @see {@link https://developers.cloudflare.com/api/operations/workers-ai-search-model}
+ */
+
+/**
+ * @typedef {Object} WorkersAIModelProperty
+ * @property {string} property_id - The ID of the property (e.g. 'beta', 'max_input_length')
+ * @property {string} value - The value of the property.
+ */
+
+/**
+ * @typedef {Object} WorkersAIModel
+ * @property {string} id - The ID (UUID) of the model. It's an internal identifier.
+ * @property {number} source - The source of the model (e.g. 1 for '@cf', 2 for '@hf').
+ * @property {string} name - The name of the model. It is the model's identifier.
+ * @property {string} description - The description of the model.
+ * @property {WorkersAIModelTask} task - The task the model is designed for.
+ * @property {WorkersAIModelTag[]} tags - The tags associated with the model.
+ * @property {WorkersAIModelProperty[]} properties - The properties associated with the model.
+ */
+
+/**
+ * @typedef {unknown} WorkersAIModelListError
+ *
+ * No docs available for this type and no errors in tests.
+ * @see {@link https://developers.cloudflare.com/api/operations/workers-ai-search-model}
+ */
+
+/**
+ * @typedef {unknown} WorkersAIModelListMessages
+ *
+ * No docs available for this type and empty in the response.
+ * @see {@link https://developers.cloudflare.com/api/operations/workers-ai-search-model}
+ */
+
+/**
+ * @typedef {Object} WorkersAIModelListResultInfo
+ * @property {number} count - The number of models returned.
+ * @property {number} page - The current page number.
+ * @property {number} per_page - The number of models per page.
+ * @property {number} total_count - The total number of models available.
+ */
+
+/**
+ * @typedef {Object} WorkersAIModelListResponse
+ * @property {boolean} success - Indicates if the request was successful.
+ * @property {WorkersAIModel[]} result - The list of models available.
+ * @property {WorkersAIModelListError} errors - The error object, if any.
+ * @property {WorkersAIModelListMessages} messages - The messages object, if any.
+ * @property {WorkersAIModelListResultInfo} result_info - The result info object.
  */
 
 /**

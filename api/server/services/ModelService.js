@@ -3,6 +3,7 @@ const { HttpsProxyAgent } = require('https-proxy-agent');
 const { EModelEndpoint, defaultModels, CacheKeys } = require('librechat-data-provider');
 const { extractBaseURL, inputSchema, processModelData, logAxiosError } = require('~/utils');
 const { OllamaClient } = require('~/app/clients/OllamaClient');
+const { WorkersAIClient } = require('~/app/clients/WorkersAI');
 const getLogStores = require('~/cache/getLogStores');
 
 const { openAIApiKey, userProvidedOpenAI } = require('./Config/EndpointService').config;
@@ -44,6 +45,10 @@ const fetchModels = async ({
 
   if (name && name.toLowerCase().startsWith('ollama')) {
     return await OllamaClient.fetchModels(baseURL);
+  }
+
+  if (name && name.toLowerCase().startsWith('workersai')) {
+    return await WorkersAIClient.fetchModels(baseURL, apiKey);
   }
 
   try {

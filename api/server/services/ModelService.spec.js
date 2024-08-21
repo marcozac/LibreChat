@@ -329,3 +329,144 @@ describe('fetchModels with Ollama specific logic', () => {
     );
   });
 });
+
+describe('fetchModels with Workers AI specific logic', () => {
+  /** @type {WorkersAIModelListResponse} */
+  const mockWorkersAIData = {
+    data: {
+      success: true,
+      result: [
+        {
+          id: '',
+          source: 1,
+          name: '@cf/meta/llama-3.1-8b-instruct',
+          description: '',
+          task: {
+            id: '',
+            name: 'Text Generation',
+            description: '',
+          },
+          tags: [],
+          properties: [],
+        },
+        {
+          id: '',
+          source: 1,
+          name: '@cf/mistral/mistral-7b-instruct-v0.1',
+          description: '',
+          task: {
+            id: '',
+            name: 'Text Generation',
+            description: '',
+          },
+          tags: [],
+          properties: [],
+        },
+        {
+          id: '',
+          source: 1,
+          name: '@cf/stabilityai/stable-diffusion-xl-base-1.0',
+          description: '',
+          task: {
+            id: '',
+            name: 'Text-to-Image',
+            description: '',
+          },
+          tags: [],
+          properties: [],
+        },
+      ],
+      errors: [],
+      messages: [],
+      result_info: { count: 3, total_count: 3, page: 1, per_page: 100 },
+    },
+  };
+
+  beforeEach(() => {
+    axios.get.mockResolvedValue(mockWorkersAIData);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+
+  it('should fetch Workers AI models when name starts with "workersai"', async () => {
+    const models = await fetchModels({
+      user: 'user789',
+      apiKey: 'testApiKey',
+      baseURL: 'https://api.cloudflare.com/client/v4/accounts/account_id/ai/v1',
+      name: 'WorkersAI123',
+    });
+
+    expect(models).toEqual([
+      '@cf/meta/llama-3.1-8b-instruct',
+      '@cf/mistral/mistral-7b-instruct-v0.1',
+      // Should not include non-Text Generation models
+    ]);
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://api.cloudflare.com/client/v4/accounts/account_id/ai/models/search',
+    ); // Adjusted to expect only one argument if no options are passed
+  });
+
+  it('should fetch Workers AI models when name starts with "workersai" and use AI Gateway', async () => {
+    const models = await fetchModels({
+      user: 'user789',
+      apiKey: 'testApiKey',
+      baseURL: 'https://gateway.ai.cloudflare.com/v1/account_id/gateway_name/any_provider',
+      name: 'WorkersAI123',
+    });
+
+    expect(models).toEqual([
+      '@cf/meta/llama-3.1-8b-instruct',
+      '@cf/mistral/mistral-7b-instruct-v0.1',
+      // Should not include non-Text Generation models
+    ]);
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://gateway.ai.cloudflare.com/v1/account_id/gateway_name/workers-ai/models/search',
+    ); // Adjusted to expect only one argument if no options are passed
+  });
+
+  it('should handle errors gracefully when fetching Workers AI models fails', async () => {
+    axios.get.mockRejectedValue(new Error('Network error'));
+    const models = await fetchModels({
+      user: 'user789',
+      apiKey: 'testApiKey',
+      baseURL: 'https://api.cloudflare.com/client/v4/accounts/account_id/ai/v1',
+      name: 'WorkersAI123',
+    });
+
+    expect(models).toEqual([]);
+    expect(logger.error).toHaveBeenCalled();
+  });
+
+  it('should return an empty array if no baseURL is provided', async () => {
+    const models = await fetchModels({
+      user: 'user789',
+      apiKey: 'testApiKey',
+      name: 'WorkersAI123',
+    });
+    expect(models).toEqual([]);
+  });
+
+  it('should not fetch Workers AI models if the name does not start with "workersai"', async () => {
+    // Mock axios to return a different set of models for non-Workers AI API calls
+    axios.get.mockResolvedValue({
+      data: {
+        data: [{ id: 'model-1' }, { id: 'model-2' }],
+      },
+    });
+
+    const models = await fetchModels({
+      user: 'user789',
+      apiKey: 'testApiKey',
+      baseURL: 'https://api.test.com',
+      name: 'TestAPI',
+    });
+
+    expect(models).toEqual(['model-1', 'model-2']);
+    expect(axios.get).toHaveBeenCalledWith(
+      'https://api.test.com/models', // Ensure the correct API endpoint is called
+      expect.any(Object), // Ensuring some object (headers, etc.) is passed
+    );
+  });
+});
