@@ -1,5 +1,6 @@
 const OpenAI = require('openai');
 const { OllamaClient } = require('./OllamaClient');
+const { WorkersAIClient } = require('./WorkersAIClient');
 const { HttpsProxyAgent } = require('https-proxy-agent');
 const {
   Constants,
@@ -117,8 +118,13 @@ class OpenAIClient extends BaseClient {
       this.useOpenRouter = true;
     }
 
+    // should we use `startsWith`?
     if (this.options.endpoint?.toLowerCase() === 'ollama') {
       this.isOllama = true;
+    }
+
+    if (this.options.endpoint?.toLowerCase().startsWith('workersai')) {
+      this.isWorkersAI = true;
     }
 
     this.FORCE_PROMPT =
@@ -1036,7 +1042,7 @@ ${convo}
         modelOptions.prompt = payload;
       }
 
-      const baseURL = extractBaseURL(this.completionsUrl);
+      const baseURL = this.isWorkersAI ? this.completionsUrl : extractBaseURL(this.completionsUrl);
       logger.debug('[OpenAIClient] chatCompletion', { baseURL, modelOptions });
       const opts = {
         baseURL,
@@ -1175,6 +1181,15 @@ ${convo}
       if (this.message_file_map && this.isOllama) {
         const ollamaClient = new OllamaClient({ baseURL, streamRate });
         return await ollamaClient.chatCompletion({
+          payload: modelOptions,
+          onProgress,
+          abortController,
+        });
+      }
+
+      if (this.isWorkersAI) {
+        const workersAIClient = new WorkersAIClient({ baseURL, apiKey: this.apiKey, streamRate });
+        return await workersAIClient.chatCompletion({
           payload: modelOptions,
           onProgress,
           abortController,

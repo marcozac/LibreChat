@@ -3,7 +3,7 @@ const { HttpsProxyAgent } = require('https-proxy-agent');
 const { EModelEndpoint, defaultModels, CacheKeys } = require('librechat-data-provider');
 const { extractBaseURL, inputSchema, processModelData, logAxiosError } = require('~/utils');
 const { OllamaClient } = require('~/app/clients/OllamaClient');
-const { WorkersAIClient } = require('~/app/clients/WorkersAI');
+const { WorkersAIClient } = require('~/app/clients/WorkersAIClient');
 const getLogStores = require('~/cache/getLogStores');
 
 const { openAIApiKey, userProvidedOpenAI } = require('./Config/EndpointService').config;

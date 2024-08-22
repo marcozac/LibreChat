@@ -1428,6 +1428,33 @@
  */
 
 /**
+ * @template R
+ * @typedef {Object} WorkersAIResponseBase
+ * @property {boolean} success - Indicates if the request was successful.
+ * @property {R} result - The result object.
+ * @property {WorkersAIResponseError[]} [errors] - The errors, if any.
+ * @property {WorkersAIResponseMessage[]} [messages] - The messages, if any.
+ */
+
+/**
+ * @typedef {Object} WorkersAIResponseError
+ * @property {string} code - The error code.
+ * @property {string} message - The error message.
+ */
+
+/**
+ * @typedef {unknown} WorkersAIResponseMessage
+ *
+ * No docs available for this type and empty in the response.
+ * @see {@link https://developers.cloudflare.com/api/operations/workers-ai-search-model}
+ */
+
+/**
+ * @typedef {Object} WorkersAIResponseResultInfo
+ * @property {WorkersAIModelListResultInfo} result_info - The result info object.
+ */
+
+/**
  * @typedef {Object} WorkersAIModelTask
  * @property {string} id - The ID of the task.
  * @property {string} name - The name of the task (e.g. 'Text Generation').
@@ -1459,20 +1486,6 @@
  */
 
 /**
- * @typedef {unknown} WorkersAIModelListError
- *
- * No docs available for this type and no errors in tests.
- * @see {@link https://developers.cloudflare.com/api/operations/workers-ai-search-model}
- */
-
-/**
- * @typedef {unknown} WorkersAIModelListMessages
- *
- * No docs available for this type and empty in the response.
- * @see {@link https://developers.cloudflare.com/api/operations/workers-ai-search-model}
- */
-
-/**
  * @typedef {Object} WorkersAIModelListResultInfo
  * @property {number} count - The number of models returned.
  * @property {number} page - The current page number.
@@ -1481,12 +1494,12 @@
  */
 
 /**
- * @typedef {Object} WorkersAIModelListResponse
- * @property {boolean} success - Indicates if the request was successful.
- * @property {WorkersAIModel[]} result - The list of models available.
- * @property {WorkersAIModelListError} errors - The error object, if any.
- * @property {WorkersAIModelListMessages} messages - The messages object, if any.
- * @property {WorkersAIModelListResultInfo} result_info - The result info object.
+ * @typedef {WorkersAIResponseBase<WorkersAIModel[]> & WorkersAIResponseResultInfo} WorkersAIModelListResponse
+ */
+
+/**
+ * @typedef {Object} WorkersAIChatCompletionMessage
+ * @property {string} response The response message.
  */
 
 /**
