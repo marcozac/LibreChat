@@ -1188,7 +1188,7 @@ ${convo}
       }
 
       if (this.isWorkersAI) {
-        const workersAIClient = new WorkersAIClient({ baseURL, apiKey: this.apiKey, streamRate });
+        const workersAIClient = new WorkersAIClient({ ...opts, apiKey: this.apiKey, streamRate });
         return await workersAIClient.chatCompletion({
           payload: modelOptions,
           onProgress,

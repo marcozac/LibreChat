@@ -1,5 +1,6 @@
 const axios = require('axios');
 const { fetchEventSource } = require('@waylaidwanderer/fetch-event-source');
+const { Constants } = require('librechat-data-provider');
 const { sleep } = require('~/server/utils');
 const { logger } = require('~/config');
 
@@ -8,6 +9,7 @@ class WorkersAIClient {
    * @param {Object} options
    * @param {string} options.baseURL The base URL of the Workers AI API.
    * @param {string} options.apiKey The API key for the Workers AI API.
+   * @param {Record<string, string>} [options.defaultHeaders] Default headers to include in requests.
    * @param {number} [options.streamRate] The rate at which to stream messages.
    */
   constructor(options) {
@@ -19,6 +21,7 @@ class WorkersAIClient {
 
   /**
    * @param {Object} options
+   * @param {Record<string, string>} [options.defaultHeaders] Default headers to include in requests.
    * @param {number} [options.streamRate] The rate at which to stream messages.
    */
   setOptions(options) {
@@ -26,6 +29,9 @@ class WorkersAIClient {
      * @TODO
      * Add specific model options (e.g. unscoped prompts).
      */
+
+    options.defaultHeaders = options.defaultHeaders ?? { 'Content-Type': 'application/json' };
+    options.streamRate = options.streamRate ?? Constants.DEFAULT_STREAM_RATE;
 
     this.options = { ...options };
   }
@@ -79,6 +85,7 @@ class WorkersAIClient {
       ...this.options,
       endpoint: `${this.baseURL}/${payload.model}`,
       headers: {
+        ...this.options.defaultHeaders,
         Authorization: `Bearer ${this.apiKey}`,
       },
     };
