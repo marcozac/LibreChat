@@ -126,6 +126,10 @@ class WorkersAIClient {
                 onProgress('[DONE]');
                 resolve(intermediateReply);
               }
+              logger.debug('[WorkersAIClient.chatCompletion] chatCompletion response', {
+                model: payload.model,
+                response: { message: intermediateReply },
+              });
             },
             onerror(err) {
               logger.error('[WorkersAIClient.chatCompletion]', err);
@@ -133,7 +137,6 @@ class WorkersAIClient {
               throw err;
             },
             async onmessage(message) {
-              logger.debug('[WorkersAIClient.chatCompletion]', message);
               if (!message.data || message.event === 'ping') {
                 return;
               }
@@ -172,7 +175,19 @@ class WorkersAIClient {
       logger.error('[WorkersAIClient.chatCompletion]', err);
       throw err;
     }
+    logger.debug('[WorkersAIClient.chatCompletion] chatCompletion response', {
+      model: payload.model,
+      response: { message: response.data.result.response },
+    });
     return response.data.result.response;
+  }
+
+  /**
+   * @param {string} model The model to get the label for.
+   * @returns {string} The label of the model.
+   */
+  static getModelLabel(model) {
+    return model.split('/').pop();
   }
 }
 
